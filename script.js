@@ -5,6 +5,7 @@ var currentVector = 0;
 // Target scroll position
 var targetY = 100;
 var targetX = 100;
+var flip = false;
 
 function initElement(name) {
     var fakeScroll = document.createElement('div')
@@ -18,9 +19,13 @@ function initElement(name) {
 const element = `fakeScroll`
 const scrollElement = initElement(element);
 
-// Update scroll `target`, and start the animation if it is not running already
 function updateScroll(event) {
-    generateTransform();
+    console.log(event);
+    if (event.deltaY > 0) {
+        generateTransformDown()
+    } else {
+        generateTransformUp()
+    }
 }
 
 // Listen for `scroll` event to update `target` scroll position
@@ -31,27 +36,48 @@ window.addEventListener('mousewheel', updateScroll)
 //     console.log(event);
 // })
 
-function generateTransform() {
-    console.log('generate')
+function generateTransformUp() {
+    console.log('move up')
+    if (currentX === 0 && currentY === 0) {
+        return;
+    }
+
+    if (currentY > targetY) {
+        currentY -= 10;
+        flip = true;
+    } else if (currentX > targetX) {
+        currentX -= 10;
+        flip = false;
+    }
+    if (currentX <= targetX && currentY <= targetY) {
+        targetX -= 100;
+        targetY -= 100;
+    }
+    currentVector = flip ? 90 : 0
+    const transform = `translate(${currentX}px, ${currentY}px) rotate(${currentVector}deg)`
+    setTransform(scrollElement, transform);
+}
+
+function generateTransformDown() {
+    console.log('move down')
     if (currentX >= 460 || currentY >= 460) {
         return;
     }
     if (currentX < targetX) {
         currentX += 10;
+        flip = false;
     }
     else if (currentY < targetY) {
-        currentVector = 90;
         currentY += 10;
+        flip = true;
     }
     if (currentX >= targetX && currentY >= targetY) {
-        currentVector += 90;
         targetY += 100;
         targetX += 100;
     }
+    currentVector = flip ? 90 : 0
     const transform = `translate(${currentX}px, ${currentY}px) rotate(${currentVector}deg)`
-
     setTransform(scrollElement, transform);
-    console.log(`(${currentX}px, ${currentY}px) (${currentVector}deg)`)
 }
 
 function setTransform(el, transform) {
