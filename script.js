@@ -20,7 +20,6 @@ const element = `fakeScroll`
 const scrollElement = initElement(element);
 
 function updateScroll(event) {
-    console.log(event);
     if (event.deltaY > 0) {
         generateTransformDown()
     } else {
